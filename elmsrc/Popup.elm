@@ -20,6 +20,7 @@ app url = start {
 
 type Action =
     UpdateNote String
+  | UpdateUrl String
   | UpdateDone Bool
   | Saved
   | DoNothing
@@ -48,6 +49,7 @@ update : Action -> NoteModel -> (NoteModel, Effects Action)
 update action m =
   case action of
     UpdateNote s -> let newModel = { m | notes = s } in (newModel, store newModel)
+    UpdateUrl s ->  let newModel = { m | url = s } in (newModel, store newModel)
     UpdateDone d -> let newModel = { m | done = d } in (newModel, store newModel)
     Saved -> ( m, Effects.none)
     DoNothing -> ( m, Effects.none)
@@ -57,6 +59,12 @@ update action m =
 view : Mode -> Signal.Address Action -> NoteModel -> Html
 view mode address model =
   div [ class "popupContainer" ] [
+    h2 [] [text "url"],
+    textarea [
+      value model.url,
+      on "input" targetValue (message address << UpdateUrl),
+      style [("width","100%"),("height","50px"),("resize","none")]] [],
+       
     h2 [] [text "General Notes"],
     textarea [
       value model.notes,
